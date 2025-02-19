@@ -4,7 +4,6 @@ export WANDB_MODE=online
 export WANDB_PROJECT=R1-V
 
 export HF_HOME="/lustre/fsw/portfolios/llmservice/users/tixiong/cache/huggingface"
-export HF_TOKEN=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
 
 
 WORKDIR="/lustre/fsw/portfolios/llmservice/users/tixiong/xty-workspace/multimodal-reasoning/R1-V"
