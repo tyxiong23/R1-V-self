@@ -54,6 +54,7 @@ _deps = [
     "isort>=5.12.0",
     "liger_kernel==0.5.2",
     "lighteval @ git+https://github.com/huggingface/lighteval.git@4f381b352c0e467b5870a97d41cb66b487a2c503#egg=lighteval[math]",
+    # "lighteval @ git+https://github.com/huggingface/lighteval.git@86f62259f105ae164f655e0b91c92a823a742724#egg=lighteval[math]",
     "math-verify",  # Used for math verification in grpo
     "packaging>=23.0",
     "parameterized>=0.9.0",
@@ -86,6 +87,7 @@ extras["tests"] = deps_list("pytest", "parameterized")
 extras["torch"] = deps_list("torch")
 extras["quality"] = deps_list("black", "isort", "flake8")
 extras["eval"] = deps_list("lighteval", "math-verify")
+# extras["eval"] = deps_list("math-verify")
 extras["dev"] = extras["quality"] + extras["tests"] + extras["eval"]
 
 # core dependencies shared across the whole project - keep this to a bare minimum :)
