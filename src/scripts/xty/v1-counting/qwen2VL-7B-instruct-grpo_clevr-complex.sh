@@ -3,18 +3,19 @@ export WANDB_ENTITY=xty620682
 export WANDB_MODE=online
 export WANDB_PROJECT=R1-V
 
-export HF_HOME="/lustre/fsw/portfolios/llmservice/users/tixiong/cache/huggingface"
+PORTOFOLIOS="nvr"
+export HF_HOME="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/cache/huggingface"
 
 
-WORKDIR="/lustre/fsw/portfolios/llmservice/users/tixiong/xty-workspace/multimodal-reasoning/R1-V"
+WORKDIR="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/xty-workspace/multimodal-reasoning/R1-V"
 cd ${WORKDIR}/src/r1-v
 
 DATA_NAME="Clevr_CoGenT_TrainA_70K_Complex"
-DATA_PATH="/lustre/fsw/portfolios/llmservice/users/tixiong/datasets/multimodal-r1/${DATA_NAME}"
+DATA_PATH="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/datasets/multimodal-r1/${DATA_NAME}"
 MODEL_PATH="Qwen/Qwen2-VL-7B-Instruct"
 MODEL_SHORT=$(basename "$MODEL_PATH")
 EPOCH=2
-MAX_COMPLETION_LEN=512
+MAX_COMPLETION_LEN=1024
 NUM_GEN=4
 RUN_NAME="${MODEL_SHORT}_${DATA_NAME}_maxlen${MAX_COMPLETION_LEN}_numgen${NUM_GEN}_epoch${EPOCH}"
 OUTPUT_DIR=${WORKDIR}/outputs/${DATA_NAME}/${RUN_NAME}

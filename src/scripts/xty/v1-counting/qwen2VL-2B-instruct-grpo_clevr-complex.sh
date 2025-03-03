@@ -10,13 +10,13 @@ export HF_HOME="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/cache/huggin
 WORKDIR="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/xty-workspace/multimodal-reasoning/R1-V"
 cd ${WORKDIR}/src/r1-v
 
-DATA_NAME="GEOQA_R1V_Train_8K"
+DATA_NAME="Clevr_CoGenT_TrainA_70K_Complex"
 DATA_PATH="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/datasets/multimodal-r1/${DATA_NAME}"
-MODEL_PATH="Qwen/Qwen2-VL-7B-Instruct"
+MODEL_PATH="Qwen/Qwen2-VL-2B-Instruct"
 MODEL_SHORT=$(basename "$MODEL_PATH")
 EPOCH=2
 MAX_COMPLETION_LEN=1024
-NUM_GEN=2
+NUM_GEN=8
 RUN_NAME="${MODEL_SHORT}_${DATA_NAME}_maxlen${MAX_COMPLETION_LEN}_numgen${NUM_GEN}_epoch${EPOCH}"
 OUTPUT_DIR=${WORKDIR}/outputs/${DATA_NAME}/${RUN_NAME}
 

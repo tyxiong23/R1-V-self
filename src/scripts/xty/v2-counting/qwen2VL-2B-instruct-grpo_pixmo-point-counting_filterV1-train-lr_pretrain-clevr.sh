@@ -10,15 +10,19 @@ export HF_HOME="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/cache/huggin
 WORKDIR="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/xty-workspace/multimodal-reasoning/R1-V"
 cd ${WORKDIR}/src/r1-v
 
-DATA_NAME="GEOQA_R1V_Train_8K"
-DATA_PATH="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/datasets/multimodal-r1/${DATA_NAME}"
-MODEL_PATH="Qwen/Qwen2-VL-7B-Instruct"
+DATA_NAME="pixmo-point-counting_filterV1_train"
+DATA_PATH="/home/tixiong/storage/datasets/multimodal-r1/pixmo-points/parquet/pixmo-point-counting_filterV1_train"
+
+# MODEL_PATH="Qwen/Qwen2-VL-2B-Instruct"
+MODEL_PATH="/home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/outputs/training_v1/clevr_cogen_a_train/Qwen2-VL-2B-Instruct_clevr_cogen_a_train_maxlen512_numgen8_epoch2/checkpoint-300"
 MODEL_SHORT=$(basename "$MODEL_PATH")
 EPOCH=2
-MAX_COMPLETION_LEN=1024
-NUM_GEN=2
-RUN_NAME="${MODEL_SHORT}_${DATA_NAME}_maxlen${MAX_COMPLETION_LEN}_numgen${NUM_GEN}_epoch${EPOCH}"
-OUTPUT_DIR=${WORKDIR}/outputs/${DATA_NAME}/${RUN_NAME}
+MAX_COMPLETION_LEN=512
+NUM_GEN=8
+lr=1e-6
+FORMAT_REWARD_ALPHA=${FORMAT_REWARD_ALPHA:-1.0}
+RUN_NAME="${MODEL_SHORT}_${DATA_NAME}_maxlen${MAX_COMPLETION_LEN}_numgen${NUM_GEN}_epoch${EPOCH}_formatAlpha${FORMAT_REWARD_ALPHA}_lr${lr}_pretrain-CLEVR-300iter"
+OUTPUT_DIR=${WORKDIR}/outputs/training_v2/${DATA_NAME}/${RUN_NAME}
 
 export LOG_PATH=$(dirname "$OUTPUT_DIR")"/${RUN_NAME}.log"
 export DEBUG_MODE="true" # Enable Debug if you want to see the rollout of model during RL
@@ -39,6 +43,7 @@ torchrun --nproc_per_node="8" \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 2 \
     --logging_steps 1 \
+    --learning_rate ${lr} \
     --bf16 \
     --report_to wandb \
     --gradient_checkpointing false \
@@ -48,6 +53,7 @@ torchrun --nproc_per_node="8" \
     --run_name $RUN_NAME \
     --save_steps 100 \
     --save_only_model true \
+    --format_reward_alpha $FORMAT_REWARD_ALPHA \
     --num_generations $NUM_GEN   # number of outputs G in grpo, reduce it would lead to faster training and smaller memory cost but higher variance  
 
 #     --max_prompt_length 512 \

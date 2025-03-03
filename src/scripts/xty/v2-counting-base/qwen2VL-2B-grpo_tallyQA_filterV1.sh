@@ -10,15 +10,17 @@ export HF_HOME="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/cache/huggin
 WORKDIR="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/xty-workspace/multimodal-reasoning/R1-V"
 cd ${WORKDIR}/src/r1-v
 
-DATA_NAME="GEOQA_R1V_Train_8K"
-DATA_PATH="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/datasets/multimodal-r1/${DATA_NAME}"
-MODEL_PATH="Qwen/Qwen2-VL-7B-Instruct"
+DATA_NAME="tallyQA_filterV1_len7_amt_vg_vqa_qwenVL2-2B"
+DATA_PATH="/home/tixiong/storage/datasets/multimodal-r1/tallyQA/parquet/train_filterV1_len7_amt_vg_vqa_qwenVL2-2B"
+
+MODEL_PATH="/lustre/fsw/portfolios/${PORTOFOLIOS}/users/tixiong/checkpoints/Qwen2-VL-2B"
 MODEL_SHORT=$(basename "$MODEL_PATH")
 EPOCH=2
-MAX_COMPLETION_LEN=1024
-NUM_GEN=2
-RUN_NAME="${MODEL_SHORT}_${DATA_NAME}_maxlen${MAX_COMPLETION_LEN}_numgen${NUM_GEN}_epoch${EPOCH}"
-OUTPUT_DIR=${WORKDIR}/outputs/${DATA_NAME}/${RUN_NAME}
+MAX_COMPLETION_LEN=512
+NUM_GEN=8
+FORMAT_REWARD_ALPHA=${FORMAT_REWARD_ALPHA:-1.0}
+RUN_NAME="${MODEL_SHORT}_${DATA_NAME}_maxlen${MAX_COMPLETION_LEN}_numgen${NUM_GEN}_epoch${EPOCH}_formatAlpha${FORMAT_REWARD_ALPHA}"
+OUTPUT_DIR=${WORKDIR}/outputs/training_v2_base/${DATA_NAME}/${RUN_NAME}
 
 export LOG_PATH=$(dirname "$OUTPUT_DIR")"/${RUN_NAME}.log"
 export DEBUG_MODE="true" # Enable Debug if you want to see the rollout of model during RL
@@ -48,6 +50,7 @@ torchrun --nproc_per_node="8" \
     --run_name $RUN_NAME \
     --save_steps 100 \
     --save_only_model true \
+    --format_reward_alpha $FORMAT_REWARD_ALPHA \
     --num_generations $NUM_GEN   # number of outputs G in grpo, reduce it would lead to faster training and smaller memory cost but higher variance  
 
 #     --max_prompt_length 512 \

@@ -16,6 +16,7 @@ import os
 import textwrap
 from collections import defaultdict
 from typing import Any, Callable, Optional, Union
+import functools
 
 import torch
 import torch.utils.data
@@ -476,6 +477,8 @@ class Qwen2VLGRPOTrainer(Trainer):
         for i, reward_func in enumerate(self.reward_funcs):
             if isinstance(reward_func, PreTrainedModel):
                 reward_func_name = reward_func.config._name_or_path.split("/")[-1]
+            elif isinstance(reward_func, functools.partial):
+                reward_func_name = reward_func.func.__name__
             else:
                 reward_func_name = reward_func.__name__
             self._metrics[f"rewards/{reward_func_name}"].append(reward_per_func[i].item())

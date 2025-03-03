@@ -14,7 +14,7 @@ submit_job \
     --logroot $LOG_ROOT \
     --email_mode never \
     --dependent_clones $RP \
-    --duration 4 \
+    --duration 2 \
     --cpu 128 \
-    --partition batch_block1 \
+    --partition batch_short \
     -c "$SCRIPT"

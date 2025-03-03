@@ -25,6 +25,8 @@ from math_verify import parse, verify
 from open_r1.trainer import Qwen2VLGRPOTrainer, Qwen2VLGRPOVLLMTrainer
 from trl import GRPOConfig, GRPOTrainer, ModelConfig, ScriptArguments, TrlParser, get_peft_config
 
+from functools import partial
+
 
 @dataclass
 class GRPOScriptArguments(ScriptArguments):
@@ -47,6 +49,10 @@ class GRPOScriptArguments(ScriptArguments):
     min_pixels: Optional[int] = field(
         default=3136,
         metadata={"help": "Minimum number of pixels for the image"},
+    )
+    format_reward_alpha: Optional[float] = field(
+        default=1.0,
+        metadata={"help": "coefficient for format reward"},
     )
 
 
@@ -93,12 +99,12 @@ def accuracy_reward(completions, solution, **kwargs):
     return rewards
 
 
-def format_reward(completions, **kwargs):
+def format_reward(completions, alpha=1.0, **kwargs):
     """Reward function that checks if the completion has a specific format."""
     pattern = r"<think>.*?</think>\s*<answer>.*?</answer>"
     completion_contents = [completion[0]["content"] for completion in completions]
     matches = [re.fullmatch(pattern, content, re.DOTALL) for content in completion_contents]
-    return [1.0 if match else 0.0 for match in matches]
+    return [1.0 * alpha if match else 0.0 for match in matches]
 
 
 reward_funcs_registry = {
@@ -116,6 +122,9 @@ SYSTEM_PROMPT = (
 
 def main(script_args, training_args, model_args):
     # Get reward functions
+    format_reward_partial = partial(format_reward, alpha=script_args.format_reward_alpha)
+    reward_funcs_registry['format'] = format_reward_partial
+
     reward_funcs = [reward_funcs_registry[func] for func in script_args.reward_funcs]
 
     # Load the dataset
@@ -200,4 +209,5 @@ def main(script_args, training_args, model_args):
 if __name__ == "__main__":
     parser = TrlParser((GRPOScriptArguments, GRPOConfig, ModelConfig))
     script_args, training_args, model_args = parser.parse_args_and_config()
+    # print(training_args.learning_rate); exit(0)
     main(script_args, training_args, model_args)
