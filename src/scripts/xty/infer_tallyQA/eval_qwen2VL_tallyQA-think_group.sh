@@ -19,4 +19,6 @@ for ckpt in $checkpoints; do
 
     bash /home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/src/scripts/xty/infer_tallyQA/infer_qwen2VL-2b-instruct_tallyQA_test_complex_subset1.5k_think_param.sh ${MODEL_PATH} ${OUTPUT_PATH}
 
+    python /home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/src/eval/calc_result.py $OUTPUT_PATH
+
 done

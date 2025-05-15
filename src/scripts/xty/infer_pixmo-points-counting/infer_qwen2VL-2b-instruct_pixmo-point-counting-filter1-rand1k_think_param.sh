@@ -20,7 +20,7 @@ output_file_merge="${OUTPUT_BASE}/all_merge.jsonl"
 echo output_file_merge $output_file_merge
 echo model_path $MODEL_PATH
 
-BATCH_SIZE=32
+BATCH_SIZE=8
 
 for chunk in $(seq 0 $((NUM_CHUNKS-1))); do
     echo $chunk

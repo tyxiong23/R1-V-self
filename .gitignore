@@ -176,3 +176,5 @@ cython_debug/
 **/outputs
 src/eval/images*
 src/eval/Geo170K
+wandb
+checkpoints/logs

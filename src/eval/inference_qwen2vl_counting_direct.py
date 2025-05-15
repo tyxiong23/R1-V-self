@@ -1,4 +1,4 @@
-from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor
+from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor, Qwen2_5_VLForConditionalGeneration
 from qwen_vl_utils import process_vision_info
 import torch
 import json
@@ -35,6 +35,11 @@ def extract_number_answer(output_str):
     # Try to find the number within <answer> tags, if can not find, return None
     # answer_pattern = r'<answer>\s*(\d+)\s*</answer>'
     # match = re.search(answer_pattern, output_str)
+
+    answer_pattern2 = r'<c(\d+)/>'
+    match2 = re.search(answer_pattern2, output_str)
+    if match2:
+        return int(match2.group(1))
     
     # if match:
     #     return int(match.group(1))
@@ -107,6 +112,15 @@ def batch_inference(batch, model, processor, args):
     return batch_output_text
     
 
+def get_model_name(model_path):
+    lower = model_path.lower()
+    if 'qwen2-vl' in lower:
+        return 'qwen2_vl'
+    elif 'qwen2.5-vl' in lower:
+        return 'qwen2_5_vl'
+    else:
+        raise NotImplementedError(f"Cannot get model name from: {model_path}")
+
 
 def main(args):
 
@@ -145,15 +159,33 @@ def main(args):
 
     # load model
     # We recommend enabling flash_attention_2 for better acceleration and memory saving, especially in multi-image and video scenarios.
-    model = Qwen2VLForConditionalGeneration.from_pretrained(
-        MODEL_PATH,
-        torch_dtype=torch.bfloat16,
-        attn_implementation="flash_attention_2",
-        device_map="auto",
-    )
+    args.model_name = get_model_name(MODEL_PATH)
+
+    qwen2p5 = False
+    if args.model_name == 'qwen2_vl':
+        model = Qwen2VLForConditionalGeneration.from_pretrained(
+            MODEL_PATH,
+            torch_dtype=torch.bfloat16,
+            attn_implementation="flash_attention_2",
+            # device_map="auto",
+            device_map="cuda"
+        )
+    elif args.model_name == 'qwen2_5_vl':
+        qwen2p5 = True
+        model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+            MODEL_PATH,
+            torch_dtype=torch.bfloat16,
+            attn_implementation="flash_attention_2",
+            device_map="cuda",
+        )
+    else:
+        raise NotImplementedError
 
     # default processer
     processor = AutoProcessor.from_pretrained(MODEL_PATH)
+
+    if qwen2p5:
+        processor.tokenizer.padding_side = "left"
 
 
     # Process data in batches

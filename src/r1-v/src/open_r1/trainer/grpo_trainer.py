@@ -377,9 +377,15 @@ class Qwen2VLGRPOTrainer(Trainer):
         image_grid_thw = prompt_inputs["image_grid_thw"]
 
         
-        if self.max_prompt_length is not None:
-            prompt_ids = prompt_ids[:, -self.max_prompt_length :]
-            prompt_mask = prompt_mask[:, -self.max_prompt_length :]
+        # if self.max_prompt_length is not None:
+        #     prompt_ids = prompt_ids[:, -self.max_prompt_length :]
+        #     prompt_mask = prompt_mask[:, -self.max_prompt_length :]
+        
+        # if self.max_prompt_length is not None:
+        #     # ori_shape = prompt_inputs.input_ids.shape
+        #     prompt_inputs["input_ids"] = prompt_inputs["input_ids"][:, -self.max_prompt_length :]
+        #     prompt_inputs["attention_mask"] = prompt_inputs["attention_mask"][:, -self.max_prompt_length :]
+        #     print(f'input_ids (max_len {self.max_prompt_length})', ori_shape, prompt_inputs.input_ids.shape)
 
         # Generate completions
         with unwrap_model_for_generation(model, self.accelerator) as unwrapped_model:

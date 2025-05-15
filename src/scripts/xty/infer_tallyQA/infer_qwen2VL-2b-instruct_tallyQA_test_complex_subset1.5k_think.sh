@@ -7,7 +7,8 @@ cd /home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/src/eval
 
 
 # JUDGE_MODE="score"
-MODEL_PATH="Qwen/Qwen2-VL-2B-Instruct"
+MODEL_PATH="Qwen/Qwen2-VL-7B-Instruct"
+# MODEL_PATH="/home/tixiong/storage/checkpoints/Qwen2-VL-2B"
 MODEL_SHORT=$(basename "$MODEL_PATH")
 OUTPUT_BASE="/home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/outputs/inference/tallyQA_test_complex_subset1.5k/${MODEL_SHORT}/think_then_answer"
 QUESTION_FILE="/home/tixiong/storage/datasets/multimodal-r1/tallyQA/tallyQA_test_complex_subset_1.5k.jsonl"

@@ -7,7 +7,8 @@ cd /home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/src/eval
 
 
 # JUDGE_MODE="score"
-MODEL_PATH="Qwen/Qwen2-VL-2B-Instruct"
+# MODEL_PATH="Qwen/Qwen2-VL-2B-Instruct"
+MODEL_PATH="Qwen/Qwen2-VL-2B"
 MODEL_SHORT=$(basename "$MODEL_PATH")
 OUTPUT_BASE="/home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/outputs/inference/pixmo-points-counting-filterV1-rand1k/${MODEL_SHORT}/think_then_answer"
 QUESTION_FILE="/home/tixiong/storage/xty-workspace/multimodal-reasoning/datasets/pixmo-points/pixmo_points_counting_filterV1_rand1k.jsonl"

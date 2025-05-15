@@ -54,6 +54,10 @@ class GRPOScriptArguments(ScriptArguments):
         default=1.0,
         metadata={"help": "coefficient for format reward"},
     )
+    image_folder: Optional[str] = field(
+        default=None,
+        metadata={"help": "Image folder"},
+    )
 
 
 def accuracy_reward(completions, solution, **kwargs):

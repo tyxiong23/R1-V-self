@@ -6,7 +6,7 @@ OUTPUT_BASE=${MODEL_BASE}/eval/eval_pixmo-points-counting-filterV1-rand1k
 
 for ckpt in $checkpoints; do
 
-    if [[ ! $ckpt == checkpoint-*00 ]]; then
+    if [[ ! $ckpt == checkpoint-* ]]; then
         continue
     fi
 
@@ -18,5 +18,7 @@ for ckpt in $checkpoints; do
     # echo MODEL_PATH $MODEL_PATH
 
     bash /home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/src/scripts/xty/infer_pixmo-points-counting/infer_qwen2VL-2b-instruct_pixmo-point-counting-filter1-rand1k_think_param.sh ${MODEL_PATH} ${OUTPUT_PATH}
+
+    python /home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/src/eval/calc_result.py $OUTPUT_PATH
 
 done

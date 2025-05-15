@@ -32,7 +32,7 @@ for chunk in $(seq 0 $((NUM_CHUNKS-1))); do
         --num-chunks $NUM_CHUNKS \
         --chunk-idx $chunk \
         --image_key 'image' \
-        --temperature 0.1 \
+        --temperature 0.6 \
         --batch_size 4 &
 done
 

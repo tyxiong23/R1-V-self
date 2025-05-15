@@ -1,4 +1,4 @@
-from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor
+from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor, Qwen2_5_VLForConditionalGeneration
 from qwen_vl_utils import process_vision_info
 import torch
 import json
@@ -14,7 +14,24 @@ def extract_number_answer(output_str):
     
     if match:
         return int(match.group(1))
+
+    answer_pattern2 = r'<answer>\s*<c(\d+)/>\s*</answer>'
+    match2 = re.search(answer_pattern2, output_str)
+    
+    if match2:
+        return int(match2.group(1))
+
     return None
+
+
+def get_model_name(model_path):
+    lower = model_path.lower()
+    if 'qwen2-vl' in lower:
+        return 'qwen2_vl'
+    elif 'qwen2.5-vl' in lower:
+        return 'qwen2_5_vl'
+    else:
+        raise NotImplementedError(f"Cannot get model name from: {model_path}")
 
 
 def main(args):
@@ -29,18 +46,40 @@ def main(args):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     OUTPUT_PATH = os.path.join(OUTPUT_DIR, 'result.json')
 
+    if os.path.exists(OUTPUT_PATH):
+        print("Exists result:", OUTPUT_PATH)
+        return
+
     PROMPT_PATH="./prompts/superclevr_test200_counting_problems.jsonl"
 
-    #We recommend enabling flash_attention_2 for better acceleration and memory saving, especially in multi-image and video scenarios.
-    model = Qwen2VLForConditionalGeneration.from_pretrained(
-        MODEL_PATH,
-        torch_dtype=torch.bfloat16,
-        attn_implementation="flash_attention_2",
-        device_map="auto",
-    )
+
+    args.model_name = get_model_name(MODEL_PATH)
+
+    qwen2p5 = False
+    if args.model_name == 'qwen2_vl':
+        model = Qwen2VLForConditionalGeneration.from_pretrained(
+            MODEL_PATH,
+            torch_dtype=torch.bfloat16,
+            attn_implementation="flash_attention_2",
+            # device_map="auto",
+            device_map="cuda"
+        )
+    elif args.model_name == 'qwen2_5_vl':
+        qwen2p5 = True
+        model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+            MODEL_PATH,
+            torch_dtype=torch.bfloat16,
+            attn_implementation="flash_attention_2",
+            device_map="cuda",
+        )
+    else:
+        raise NotImplementedError
 
     # default processer
     processor = AutoProcessor.from_pretrained(MODEL_PATH)
+
+    if qwen2p5:
+        processor.tokenizer.padding_side = "left"
 
     data = []
     with open(PROMPT_PATH, "r") as f:
@@ -88,7 +127,7 @@ def main(args):
         inputs = inputs.to("cuda")
 
         # Inference: Generation of the output
-        generated_ids = model.generate(**inputs, use_cache=True, max_new_tokens=256, do_sample=False)
+        generated_ids = model.generate(**inputs, use_cache=True, max_new_tokens=2048, do_sample=False)
         
         generated_ids_trimmed = [
             out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)

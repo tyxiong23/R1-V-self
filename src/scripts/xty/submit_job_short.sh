@@ -1,6 +1,6 @@
-RP=${RP:-0}
+RP=${RP:-1}
 
-LOG_ROOT="/home/tixiong/storage/xty-workspace/multimodal-reasoning/R1-V/outputs/logs"
+LOG_ROOT="/lustre/fsw/portfolios/nvr/users/tixiong/xty-workspace/multimodal-reasoning/R1-V/outputs/logs"
 
 SCRIPT=$1
 
@@ -15,6 +15,6 @@ submit_job \
     --email_mode never \
     --dependent_clones $RP \
     --duration 2 \
-    --cpu 128 \
+    --cpu 32 \
     --partition batch_short \
     -c "$SCRIPT"
